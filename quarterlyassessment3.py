@@ -1,16 +1,5 @@
 import sqlite3
 
-# Add a question to a specific category table
-def add_question(category, question_text, options, correct_answer):
-    conn = sqlite3.connect('quiz_bowl.db')
-    cursor = conn.cursor()
-    cursor.execute(f"""
-        INSERT INTO {category} (question_text, option_1, option_2, option_3, option_4, correct_answer)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (question_text, *options, correct_answer))
-    conn.commit()
-    conn.close()
-
 # Retrieve questions from a specific category
 def get_questions(category):
     conn = sqlite3.connect('quiz_bowl.db')
