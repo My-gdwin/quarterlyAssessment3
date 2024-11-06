@@ -139,26 +139,37 @@ class QuizApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Quiz Bowl")
-        
         self.categories = ["Math", "Science", "History", "Literature", "Geography"]
-        
-        self.selected_category = tk.StringVar()
-        
-        # Setup category selection window
+        self.selected_category = tk.StringVar(value="")  # Default to empty string for no category selected
+        self.quiz_questions = []
+        self.current_question_index = 0
+        self.score = 0
         self.setup_category_selection()
 
     def setup_category_selection(self):
         tk.Label(self.root, text="Select a Quiz Category", font=("Helvetica", 14)).pack(pady=10)
-        
-        for category in self.categories:
-            cat = tk.Radiobutton(self.root, text=category, variable=self.selected_category, value=category,).pack(anchor=tk.W)
-            
-        
-        tk.Button(self.root, text="Start Quiz Now", command=self.start_quiz).pack(pady=20)
+
+        # Dropdown menu for category selection
+        self.category_menu = ttk.Combobox(self.root, values=self.categories, state="readonly", width=20)
+        self.category_menu.set("Select a category")  # Default text
+        self.category_menu.pack(pady=10)
+
+        self.start_button = tk.Button(self.root, text="Start Quiz Now", command=self.start_quiz, state=tk.DISABLED)
+        self.start_button.pack(pady=20)
+
+        # Bind the dropdown change event to check if a category is selected
+        self.category_menu.bind("<<ComboboxSelected>>", self.check_category_selection)
+
+    def check_category_selection(self, event=None):
+        selected_category = self.category_menu.get()
+        if selected_category != "Select a category":
+            self.start_button.config(state=tk.NORMAL)
+        else:
+            self.start_button.config(state=tk.DISABLED)
 
     def start_quiz(self):
-        category = self.selected_category.get()
-        if not category:
+        category = self.category_menu.get()
+        if category == "Select a category" or not category:
             messagebox.showwarning("Selection Required", "Please select a category!")
             return
         
@@ -171,7 +182,6 @@ class QuizApp:
         shuffle(self.quiz_questions)
         self.current_question_index = 0
         self.score = 0
-        
         self.show_question_window()
 
     def show_question_window(self):
